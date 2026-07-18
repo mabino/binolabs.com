@@ -265,6 +265,45 @@
       transform: translateX(4px);
     }
 
+    /* Card with multiple action links */
+    .card-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 8px;
+    }
+
+    .card-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent-light);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .card-link + .card-link {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-link:hover {
+      color: #fff;
+    }
+
+    .card-link .card-arrow {
+      display: flex;
+      align-items: center;
+      transform: translateX(0);
+      transition: transform 0.2s ease;
+    }
+
+    .card-link:hover .card-arrow {
+      transform: translateX(4px);
+    }
+
     /* Footer */
     .footer {
       text-align: center;
@@ -337,7 +376,7 @@
       </a>
 
       <!-- Neko Virtual Browser -->
-      <a href="https://neko.binolabs.com" class="card">
+      <div class="card">
         <div class="card-header">
           <div class="card-icon">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -346,42 +385,28 @@
               <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
           </div>
-          <span class="card-title">Neko Browser</span>
+          <span class="card-title">Neko</span>
         </div>
-        <p class="card-desc">Share a browser session.</p>
-        <div class="card-footer">
-          <span>Launch Session</span>
-          <div class="card-arrow">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </div>
+        <p class="card-desc">Share a browser session or manage multiple rooms.</p>
+        <div class="card-links">
+          <a href="https://neko.binolabs.com" class="card-link">
+            <span>Launch Session</span>
+            <div class="card-arrow">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </a>
+          <a href="https://neko-rooms.binolabs.com" class="card-link">
+            <span>Manage Rooms</span>
+            <div class="card-arrow">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </a>
         </div>
-      </a>
-
-      <!-- Neko Rooms Manager -->
-      <a href="https://neko-rooms.binolabs.com" class="card">
-        <div class="card-header">
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="9"></rect>
-              <rect x="14" y="3" width="7" height="5"></rect>
-              <rect x="14" y="12" width="7" height="9"></rect>
-              <rect x="3" y="16" width="7" height="5"></rect>
-            </svg>
-          </div>
-          <span class="card-title">Neko Rooms</span>
-        </div>
-        <p class="card-desc">Rooms dashboard for multiple shared browser sessions.</p>
-        <div class="card-footer">
-          <span>Manage Rooms</span>
-          <div class="card-arrow">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </div>
-        </div>
-      </a>
+      </div>
     </div>
 
     <!-- Category 2: Entertainment & Gaming -->

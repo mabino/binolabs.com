@@ -125,13 +125,20 @@
     #fTelnetContainer {
       width: 100%;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       background: #000;
       border-radius: 10px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.05);
       padding: 12px;
+    }
+
+    /* Force the fTelnet status bar to sit below the terminal canvas */
+    #fTelnetContainer #fTelnetStatusBar {
+      position: static !important;
+      width: 100% !important;
+      flex-shrink: 0;
     }
 
     /* Back Button */
@@ -178,7 +185,7 @@
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
-      <span>Back to Portal</span>
+      <span>Back to Home</span>
     </a>
   </div>
 
