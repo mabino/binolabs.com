@@ -496,6 +496,46 @@
         card.style.setProperty('--y', `${y}px`);
       });
     });
+
+    // Fetch live system health status via same-origin endpoint
+    async function checkSystemStatus() {
+      const badge = document.querySelector('.status-indicator');
+      const badgeText = badge?.querySelector('span');
+      const badgeDot = badge?.querySelector('.status-dot');
+      if (!badge || !badgeText || !badgeDot) return;
+
+      try {
+        const res = await fetch('/api/status', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'ok') {
+            badgeText.textContent = 'All Services Operational';
+            badgeDot.style.backgroundColor = 'var(--success)';
+            badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+            badge.style.color = '#34d399';
+          } else {
+            badgeText.textContent = 'Degraded Performance';
+            badgeDot.style.backgroundColor = '#f59e0b';
+            badge.style.borderColor = 'rgba(245, 158, 11, 0.2)';
+            badge.style.color = '#fbbf24';
+          }
+        } else {
+          throw new Error(`HTTP ${res.status}`);
+        }
+      } catch (err) {
+        badgeText.textContent = 'System Status Unavailable';
+        badgeDot.style.backgroundColor = '#ef4444';
+        badge.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+        badge.style.color = '#f87171';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkSystemStatus);
   </script>
 </body>
 </html>
