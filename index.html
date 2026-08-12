@@ -126,6 +126,51 @@
       }
     }
 
+    /* Login/Logout button (top-right) */
+    .auth-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      background: rgba(139, 92, 246, 0.08);
+      color: var(--accent-light);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      visibility: hidden;
+    }
+
+    .auth-btn.visible {
+      visibility: visible;
+    }
+
+    .auth-btn:hover {
+      background: rgba(139, 92, 246, 0.18);
+      border-color: rgba(139, 92, 246, 0.6);
+      color: #fff;
+    }
+
+    /* Tiles/sections gated behind SSO: hidden until a session is confirmed.
+       Presentation only — the apps themselves enforce SSO at the gateway. */
+    .auth-only {
+      display: none;
+    }
+
+    body.authed .auth-only {
+      display: flex;
+    }
+
+    body.authed .grid.auth-only {
+      display: grid;
+    }
+
     /* Grid Section */
     .section-title {
       font-size: 1.25rem;
@@ -315,7 +360,9 @@
 </head>
 <body>
   <div class="glow-bg"></div>
-  
+
+  <a id="authBtn" class="auth-btn" href="https://auth.binolabs.com/oauth2/start?rd=https%3A%2F%2Fbinolabs.com%2F">Log in</a>
+
   <main class="container">
     <header class="header">
       <h1 class="logo-text">BinoLabs</h1>
@@ -325,9 +372,9 @@
       </div>
     </header>
 
-    <!-- Category 1: Applications & Media -->
-    <h2 class="section-title">Core Applications</h2>
-    <div class="grid">
+    <!-- Category 1: Applications & Media (SSO-gated tiles) -->
+    <h2 class="section-title auth-only">Core Applications</h2>
+    <div class="grid auth-only">
       <!-- Scratch Sound -->
       <a href="/scratch-sound/" class="card">
         <div class="card-header">
@@ -475,8 +522,8 @@
         </div>
       </a>
 
-      <!-- MacLand -->
-      <a href="/macland/" class="card">
+      <!-- MacLand (SSO-gated) -->
+      <a href="/macland/" class="card auth-only">
         <div class="card-header">
           <div class="card-icon">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -499,9 +546,9 @@
       </a>
     </div>
 
-    <!-- Category 3: Administration & Monitoring -->
-    <h2 class="section-title">Infrastructure</h2>
-    <div class="grid">
+    <!-- Category 3: Administration & Monitoring (SSO-gated tiles) -->
+    <h2 class="section-title auth-only">Infrastructure</h2>
+    <div class="grid auth-only">
       <!-- Minecraft Admin -->
       <a href="https://mc-admin.binolabs.com" class="card">
         <div class="card-header">
@@ -581,7 +628,31 @@
       }
     }
 
+    // Session-aware UI: probe the shared SSO session (same-origin, cookie
+    // scoped to .binolabs.com) to set the Login/Logout button and reveal
+    // gated tiles. Presentation only — every gated app enforces SSO at the
+    // gateway regardless of what this page shows.
+    async function checkSession() {
+      const btn = document.getElementById('authBtn');
+      if (!btn) return;
+      const here = encodeURIComponent(window.location.origin + '/');
+      let authed = false;
+      try {
+        const res = await fetch('/api/session', { cache: 'no-store' });
+        authed = res.ok;
+      } catch (err) {
+        // Probe unavailable: stay in the signed-out presentation.
+      }
+      document.body.classList.toggle('authed', authed);
+      btn.textContent = authed ? 'Log out' : 'Log in';
+      btn.href = authed
+        ? 'https://auth.binolabs.com/oauth2/sign_out?rd=' + here
+        : 'https://auth.binolabs.com/oauth2/start?rd=' + here;
+      btn.classList.add('visible');
+    }
+
     document.addEventListener('DOMContentLoaded', checkSystemStatus);
+    document.addEventListener('DOMContentLoaded', checkSession);
   </script>
 </body>
 </html>
