@@ -157,14 +157,13 @@
       color: #fff;
     }
 
-    /* Tiles/sections gated behind SSO: hidden until a session is confirmed.
-       Presentation only — the apps themselves enforce SSO at the gateway. */
-    .auth-only {
-      display: none;
-    }
-
-    body.authed .auth-only {
-      display: flex;
+    /* Tiles gated behind SSO: hidden unless a session is confirmed.
+       Presentation only — the apps enforce SSO at the gateway regardless.
+       body:not(.authed) + !important outranks the later component display
+       rules (.card { display: flex } etc.), which otherwise win on source
+       order at equal specificity and leak the gated tiles. */
+    body:not(.authed) .auth-only {
+      display: none !important;
     }
 
     /* Grid Section */
