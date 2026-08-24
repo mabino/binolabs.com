@@ -496,12 +496,14 @@
       });
     }
 
-    // Gated tiles are absent from this page's HTML; an SSO-protected
-    // fragment supplies them to authenticated sessions only.
-    function injectGatedTiles() {
-      fetch('/gated-tiles.html', { cache: 'no-store' })
+    // Gated tiles are absent from this page's HTML; SSO-protected
+    // fragments supply them to authenticated sessions only. The admin
+    // fragment additionally 403s for non-operator identities, so it
+    // simply contributes nothing for most signed-in users.
+    function injectFragment(path) {
+      return fetch(path, { cache: 'no-store' })
         .then(function (res) {
-          if (!res.ok) throw new Error('gated tiles unavailable');
+          if (!res.ok) throw new Error(path + ' unavailable');
           return res.text();
         })
         .then(function (html) {
@@ -512,9 +514,14 @@
             while (group.firstElementChild) grid.appendChild(group.firstElementChild);
           });
           bindCardGlow(document);
-        })
-        .catch(function () { /* anonymous view stands */ })
-        .finally(updateSections);
+        });
+    }
+
+    function injectGatedTiles() {
+      Promise.allSettled([
+        injectFragment('/gated-tiles.html'),
+        injectFragment('/gated-tiles-admin.html')
+      ]).then(updateSections);
     }
 
     // Fetch live system health status via same-origin endpoint
