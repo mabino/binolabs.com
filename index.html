@@ -4,11 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BinoLabs Portal</title>
+  <script>
+    (function () {
+      var t = localStorage.getItem('binolabs-theme') || localStorage.getItem('seccam-theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
+      color-scheme: dark;
       --bg-dark: #0a0b10;
       --card-bg: rgba(17, 18, 25, 0.45);
       --card-border: rgba(255, 255, 255, 0.06);
@@ -21,6 +28,50 @@
       --accent-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #6d28d9 100%);
       --success: #10b981;
       --success-glow: rgba(16, 185, 129, 0.2);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        color-scheme: light;
+        --bg-dark: #f3f4f8;
+        --card-bg: rgba(255, 255, 255, 0.85);
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-border-hover: rgba(139, 92, 246, 0.45);
+        --glow-color: rgba(139, 92, 246, 0.06);
+        --text-main: #111827;
+        --text-muted: #4b5563;
+        --accent: #7c3aed;
+        --accent-light: #6d28d9;
+      }
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg-dark: #f3f4f8;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-border-hover: rgba(139, 92, 246, 0.45);
+      --glow-color: rgba(139, 92, 246, 0.06);
+      --text-main: #111827;
+      --text-muted: #4b5563;
+      --accent: #7c3aed;
+      --accent-light: #6d28d9;
+    }
+
+    :root[data-theme="light"] .logo-text,
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) .logo-text {
+        background: linear-gradient(to right, #111827, #374151);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      :root:not([data-theme="dark"]) .section-title,
+      :root:not([data-theme="dark"]) .card-title {
+        color: #111827;
+      }
+    }
+    :root[data-theme="light"] .section-title,
+    :root[data-theme="light"] .card-title {
+      color: #111827;
     }
 
     * {
@@ -321,14 +372,32 @@
       transform: translateX(4px);
     }
 
-    /* Footer */
+    /* Thin Footer */
     .footer {
-      text-align: center;
-      padding: 40px 24px;
-      color: rgba(255, 255, 255, 0.25);
-      font-size: 0.85rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 10px 24px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--card-border);
       z-index: 1;
+      margin-top: auto;
+    }
+    #theme-toggle {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.2s, transform 0.2s;
+    }
+    #theme-toggle:hover {
+      color: var(--text-main);
+      transform: scale(1.1);
     }
 
     @media (max-width: 768px) {
@@ -516,7 +585,8 @@
   </main>
 
   <footer class="footer">
-    &copy; 2026 BinoLabs
+    <button id="theme-toggle" title="Toggle light/dark theme" aria-label="Toggle light/dark theme">◐</button>
+    <span>&copy; 2026 BinoLabs</span>
   </footer>
 
   <script>
@@ -636,6 +706,19 @@
         ? 'https://auth.binolabs.com/oauth2/sign_out?rd=' + here
         : 'https://auth.binolabs.com/oauth2/start?rd=' + here;
       btn.classList.add('visible');
+    }
+
+    // Manual light/dark theme toggle
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function () {
+        const pinned = document.documentElement.getAttribute('data-theme');
+        const effective = pinned ||
+          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const next = effective === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('binolabs-theme', next);
+      });
     }
 
     document.addEventListener('DOMContentLoaded', checkSystemStatus);

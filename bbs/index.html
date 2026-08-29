@@ -4,11 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Bean Board BBS</title>
+  <script>
+    (function () {
+      var t = localStorage.getItem('binolabs-theme') || localStorage.getItem('seccam-theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
+      color-scheme: dark;
       --bg-dark: #0a0b10;
       --card-bg: rgba(17, 18, 25, 0.6);
       --card-border: rgba(255, 255, 255, 0.08);
@@ -18,6 +25,31 @@
       --text-muted: #9ca3af;
       --accent: #8b5cf6;
       --accent-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #6d28d9 100%);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        color-scheme: light;
+        --bg-dark: #f3f4f8;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-border-hover: rgba(139, 92, 246, 0.45);
+        --glow-color: rgba(139, 92, 246, 0.06);
+        --text-main: #111827;
+        --text-muted: #4b5563;
+        --accent: #7c3aed;
+      }
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg-dark: #f3f4f8;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-border-hover: rgba(139, 92, 246, 0.45);
+      --glow-color: rgba(139, 92, 246, 0.06);
+      --text-main: #111827;
+      --text-muted: #4b5563;
+      --accent: #7c3aed;
     }
 
     * {
@@ -187,6 +219,10 @@
       </svg>
       <span>Back to Home</span>
     </a>
+    <footer style="margin-top: 30px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; font-size: 11px; color: var(--text-muted);">
+      <button id="theme-toggle" title="Toggle light/dark theme" aria-label="Toggle light/dark theme" style="border:0;background:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px;">◐</button>
+      <span>&copy; 2026 BinoLabs</span>
+    </footer>
   </div>
 
   <script src="ftelnet.norip.xfer.min.js" id="fTelnetScript"></script>
@@ -196,6 +232,18 @@
     Options.Port = 443;
     Options.WebSocketUrlPath = "/bbs/wss/";
     var Client = new fTelnetClient('fTelnetContainer', Options);
+
+    var themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function () {
+        var pinned = document.documentElement.getAttribute('data-theme');
+        var effective = pinned ||
+          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var next = effective === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('binolabs-theme', next);
+      });
+    }
   </script>
 </body>
 </html>
